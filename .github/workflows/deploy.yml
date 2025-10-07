@@ -20,8 +20,15 @@ jobs:
           pip install -r requirements.txt
           pip install pytest boto3
 
-      - name: Run tests
+       - name: Debug workspace
         run: |
-          export PYTHONPATH=.
-          pytest -q
+          pwd
+          python -V
+          ls -la
+          ls -la lambda_fn || true
+          ls -la tests || true
 
+      - name: Run tests
+        env:
+          PYTHONPATH: .
+        run: pytest -q

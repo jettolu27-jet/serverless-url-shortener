@@ -1,8 +1,11 @@
+# tests/test_app.py
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-
+# Ensure repo root is on sys.path (CI-safe)
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from lambda_fn.app import shorten_handler, redirect_handler
 import json
