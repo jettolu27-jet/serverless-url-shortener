@@ -1,30 +1,24 @@
-name: Deploy URL Shortener
+name: Local CI - Serverless URL Shortener
 on:
   push:
     branches: [ "main" ]
+
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Configure AWS creds
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          python-version: '3.11'
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform init/plan/apply
+      - name: Install dependencies
         run: |
-          terraform -chdir=infra init -backend=false
-          terraform -chdir=infra plan -out=tfplan
-          terraform -chdir=infra apply -auto-approve tfplan
+          pip install -r requirements.txt
+          pip install pytest boto3
 
-      - name: Output API endpoint
-        run: terraform -chdir=infra output -raw api_endpoint || true
+      - name: Run tests
+        run: pytest -q
