@@ -21,4 +21,6 @@ jobs:
           pip install pytest boto3
 
       - name: Run tests
-        run: pytest -q
+        run: |
+          PYTHONPATH=. pytest -q
+
